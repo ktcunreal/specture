@@ -33,11 +33,15 @@ func addWhitelist(w http.ResponseWriter, r *http.Request) {
 	if chi.URLParam(r, "secret") == utils.SHA256STR(config.GetPresharedKey() + strconv.Itoa(issuetime)) {
 		result := utils.AppendIfNotExist(config.GetWhitelistPath(), fmt.Sprintf("%s/32", r.RemoteAddr))
 		
-		exec.Command("systemctl", "reload", "haproxy")
+		cmd := exec.Command("systemctl", "reload", "haproxy")
+		stdout, err := cmd.Output()
+		if err != nil {
+			log.Printf("%v\n", err)
+		}
 
 		var resJsonStr string
 		resJsonStr, _ = sjson.Set(resJsonStr, "sourceIp", fmt.Sprintf("%s", r.RemoteAddr))
-		resJsonStr, _ = sjson.Set(resJsonStr, "result", fmt.Sprintf("%s%s", result))
+		resJsonStr, _ = sjson.Set(resJsonStr, "result", fmt.Sprintf("%s%s", result, string(stdout)))
 
 		w.Write([]byte(resJsonStr))
 		
