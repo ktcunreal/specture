@@ -28,6 +28,7 @@ Assume you have
         acl whitelist_local src -f /etc/haproxy/whitelist
         use_backend local_proxy if whitelist
         default_backend camouflage
+        option  forwardfor
 
     backend proxy-frontend
         server proxy-frontend 127.0.0.1:8118
@@ -35,7 +36,7 @@ Assume you have
     backend camouflage
         mode http
         server specture 127.0.0.1:3000
-
+        option  forwardfor
 #### run spectrue via cmdline
 > ./spectrue --listen=127.0.0.1:3000  \
 -p "some_long_random_preshared_key" \
