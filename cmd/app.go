@@ -12,7 +12,6 @@ import (
 func main() {
 	config.LoadConfig()
 	InitLogger(config.GetLoglevel())
-
 	router := api.InitializeMainRouter()
 
 	log.Info("Server started")
@@ -23,7 +22,6 @@ func main() {
 
 func InitLogger(conf string) {
 	var loglevel log.Level
-
 	switch conf {
 	case "debug":
 		loglevel = log.DebugLevel

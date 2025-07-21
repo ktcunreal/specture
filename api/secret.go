@@ -6,7 +6,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/tidwall/sjson"
 	"net/http"
-	"os/exec"
 	"strconv"
 	"specture/utils"
 	"specture/internal/config"
@@ -28,19 +27,17 @@ func addWhitelist(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, config.GetDummyUrl(), http.StatusMovedPermanently)
 		return
 	}
-
 	log.Infof("Cred issue time is %v", issuetime)
 
 	if chi.URLParam(r, "secret") == utils.SHA256STR(config.GetPresharedKey() + strconv.Itoa(issuetime)) {
+		result := utils.AppendIfNotExist(config.GetWhitelistPath(), fmt.Sprintf("%s/32", r.RemoteAddr))
+
 		var resJsonStr string
-		cmd := exec.Command("/usr/bin/addwhitelist", r.RemoteAddr, config.GetWhitelistPath())
-		stdout, err := cmd.Output()
-		if err != nil {
-			log.Printf("%v\n", err)
-		}
 		resJsonStr, _ = sjson.Set(resJsonStr, "sourceIp", fmt.Sprintf("%s", r.RemoteAddr))
-		resJsonStr, _ = sjson.Set(resJsonStr, "result", fmt.Sprintf("%s", string(stdout)))
+		resJsonStr, _ = sjson.Set(resJsonStr, "result", fmt.Sprintf("%s", result))
+
 		w.Write([]byte(resJsonStr))
+		
 	} else {
 		http.Redirect(w, r, config.GetDummyUrl(), http.StatusMovedPermanently)
 	}

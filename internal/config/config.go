@@ -17,7 +17,7 @@ type ServerConfig struct {
 	LogLevel	string	`long:"log-level" default:"info" description:"Log level"`
 	DummyUrl	string	`long:"dummy" default:"https://www.baidu.com" description:"Dummy url"`
 	BaseUrl			string `long:"url" description:"Base url"`
-	WhitelistPath	string 	`long:"whitelist-path" default:"/etc/haproxy/whitelist" description:"Location of whitelist file"`
+	WhitelistPath	string 	`long:"whitelist" default:"/etc/haproxy/whitelist" description:"Location of whitelist file"`
 }
 
 func LoadConfig() {
@@ -71,7 +71,7 @@ func ParseFromJson(s string, sc *ServerConfig) {
 	if item := gjson.Get(s, "dummy");item.Exists() {
 		sc.DummyUrl = item.String()
 	}	
-	if item := gjson.Get(s, "whitelist-path");item.Exists() {
+	if item := gjson.Get(s, "whitelist");item.Exists() {
 		sc.WhitelistPath = item.String()
 	}	
 }
